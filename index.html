@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ETC 互動挑戰賽</title>
+    <style>
+        :root { --primary: #0056b3; --success: #28a745; --bg: #f8f9fa; --selected-bg: #d4edda; --selected-border: #28a745; }
+        body { font-family: "Microsoft JhengHei", sans-serif; background: var(--bg); margin: 0; display: flex; justify-content: center; align-items: center; min-height: 100vh; }
+        .container { background: white; width: 95%; max-width: 500px; border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); position: relative; overflow: hidden; }
+        .restart-btn { position: absolute; top: 12px; right: 12px; background: rgba(255, 255, 255, 0.2); border: 1px solid rgba(255, 255, 255, 0.5); color: #ffffff; padding: 5px 12px; border-radius: 6px; cursor: pointer; font-size: 0.8rem; z-index: 105; font-weight: bold; }
+        .header { background: var(--primary); color: white; padding: 40px 20px 25px 20px; text-align: center; }
+        .score-box { margin-top: 10px; font-size: 1.1rem; font-weight: bold; background: rgba(0,0,0,0.2); display: inline-block; padding: 5px 18px; border-radius: 50px; }
+        .content { padding: 25px; }
+        .option { background: #fff; border: 2px solid #e9ecef; padding: 15px; border-radius: 12px; margin-bottom: 12px; cursor: pointer; transition: 0.2s; }
+        .option.selected { background-color: var(--selected-bg); border-color: var(--selected-border); transform: translateY(-2px); }
+        .feedback { display: none; margin: 15px 0; padding: 15px; border-radius: 10px; font-weight: bold; line-height: 1.6; }
+        .is-correct { background: #d4edda; color: #155724; }
+        .is-wrong { background: #f8d7da; color: #721c24; }
+        .btn-main { background: var(--primary); color: white; border: none; width: 100%; padding: 16px; border-radius: 12px; cursor: pointer; font-size: 1.15rem; font-weight: bold; }
+        .btn-main:disabled { background: #ccc; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <button class="restart-btn" onclick="resetQuiz()">🔄 重新作答</button>
+    <div class="header">
+        <h2 style="margin:0;">🚗 ETC 知識挑戰賽</h2>
+        <div id="score-text" class="score-box">目前得分：0 / 100</div>
+    </div>
+    <div class="content">
+        <div id="quiz-box">
+            <div id="q-text" style="font-size:1.2rem; font-weight:bold; margin-bottom:20px;">載入中...</div>
+            <div id="options-box"></div>
+            <div id="feedback" class="feedback"></div>
+            <button id="action-btn" class="btn-main" onclick="handleButtonClick()" disabled>請先選擇答案</button> 
+        </div>
+        <div id="finish-box" style="display:none; text-align:center;">
+            <h1 style="font-size:4rem; margin: 10px 0;">🏆</h1>
+            <h2>挑戰完成！</h2>
+            <div id="final-score" style="font-size:2.5rem; color:var(--primary); font-weight:bold; margin:20px 0;"></div>
+            <p>感謝您的參與，請出示畫面向工作人員兌換小禮物！</p>
+            <button class="btn-main" onclick="resetQuiz()">再玩一次</button>
+        </div>
+    </div>
+</div>
+
+<script>
+    const GOOGLE_FORM_URL = "https://docs.google.com/forms/d/e/1FAIpQLSfw8b3E28lFt763uiiwd1q2ifnp1L9N2KXTOIDS-LPJQf2YRw/formResponse";
+    const ENTRY_ID = "entry.432371194";
+
+    // 核心：用來存儲所有答案的陣列
+    let userAnswers = []; 
+
+    function sendToGoogle(allContent) {
+        const iframe = document.createElement('iframe');
+        iframe.style.display = 'none';
+        iframe.name = "hidden_iframe";
+        document.body.appendChild(iframe);
+
+        const form = document.createElement('form');
+        form.method = "POST";
+        form.action = GOOGLE_FORM_URL;
+        form.target = "hidden_iframe";
+
+        const input = document.createElement('input');
+        input.type = "hidden";
+        input.name = ENTRY_ID;
+        input.value = allContent; // 這裡是打包好的長字串
+
+        form.appendChild(input);
+        document.body.appendChild(form);
+        form.submit();
+
+        setTimeout(() => {
+            document.body.removeChild(form);
+            document.body.removeChild(iframe);
+        }, 500);
+    }
+
+    const quizData = [
+        { q: "第一題：ETC通行費每日免費里程多少公里?(10分)", options: ["0公里", "10公里", "20公里", "30公里"], correct: 2, correctInfo: "正確！每日有20公里的免費里程喔!", wrongInfo: "答錯了！是20公里喔!" },
+        { q: "第二題：以下哪個「不是」正確的通行費繳費方式?(10分)", options: ["自動儲值", "點選不明繳費連結","至門市洽詢", "超商或郵局繳費"], correct: 1, correctInfo: "答對!不明連結要當心!", wrongInfo: "不明連結很有可能是詐騙喔!" },
+        { q: "第三題：綁定自動儲值繳納通行費的好處有哪些?(10分)", options: ["通行費享9折優惠", "無須擔心遲繳罰單", "不用一直持單繳費","以上皆是"], correct: 3, correctInfo: "答對!自動扣繳好處多多!", wrongInfo: "不對喔，好處可多著呢!" },
+        { q: "第四題：通行費逾期未繳又置之不理會發生什麼事?(10分)", options: ["舉發300元罰單", "移送強制執行", "財產遭扣押、拍賣","以上皆是"], correct: 3, correctInfo: "答對!所以要準時繳納喔!", wrongInfo: "逾期不繳會衍生問題喔!" },
+        { q: "第五題：收到催繳通知，想要確認詐騙可以怎麼做?(10分)", options: ["撥打遠通客服", "官網/APP查詢","遠通LINE客服詢問","以上皆是"], correct: 3, correctInfo: "答對了！", wrongInfo: "以上三個方式都可以喔!" },
+        { q: "加分題1: 填答者年齡?", options: ["18歲以下", "18-35歲", "36-50歲", "51-64歲", "65歲以上"], type: "survey" },
+        { q: "加分題2: 是否持有駕照?", options: ["汽機車皆有", "僅有汽車", "僅有機車","皆無"], type: "survey" },
+        { q: "加分題3: 居住縣市?", options: ["彰化以北","雲林縣","嘉義縣市","臺南市","高雄市","屏東縣","宜花東"], type: "survey" },
+        { q: "加分題4：每周使用國道的次數?", options: ["每天","3-6天","1-2天","幾乎沒有"], type: "survey" },
+        { q: "加分題5：家中車輛ETC繳費方式?", options: ["自動儲值", "超商現金儲值","收到通知再繳費"], type: "survey" }
+    ];
+
+    let currentIdx = 0, score = 0, selectedIdx = null, isJudged = false;
+
+    function render() {
+        const data = quizData[currentIdx];
+        document.getElementById('q-text').innerText = `Q${currentIdx + 1}. ${data.q}`;
+        const box = document.getElementById('options-box');
+        box.innerHTML = "";
+        document.getElementById('feedback').style.display = "none";
+        const btn = document.getElementById('action-btn');
+        btn.innerText = "下一題"; btn.disabled = true;
+        selectedIdx = null; isJudged = false;
+
+        data.options.forEach((opt, i) => {
+            const d = document.createElement('div');
+            d.className = 'option'; d.innerText = opt;
+            d.onclick = () => {
+                if(isJudged) return;
+                selectedIdx = i; btn.disabled = false;
+                document.querySelectorAll('.option').forEach(el => el.classList.remove('selected'));
+                d.classList.add('selected');
+            };
+            box.appendChild(d);
+        });
+    }
+
+    function handleButtonClick() {
+        if (!isJudged) {
+            const data = quizData[currentIdx];
+            isJudged = true;
+            const fb = document.getElementById('feedback');
+            fb.style.display = "block";
+            
+            // 暫存民眾選擇的選項文字，不在此時發送
+            userAnswers.push(`Q${currentIdx+1}:${data.options[selectedIdx]}`);
+
+            if (data.type === "survey") {
+                score += 10; fb.className = "feedback is-correct"; fb.innerText = "✅ 感謝您的回答！";
+            } else {
+                const isCorrect = (selectedIdx === data.correct);
+                if (isCorrect) score += 10;
+                fb.className = "feedback " + (isCorrect ? "is-correct" : "is-wrong");
+                fb.innerText = isCorrect ? "✅ " + data.correctInfo : "❌ " + data.wrongInfo;
+            }
+            document.getElementById('score-text').innerText = `目前得分：${score} / 100`;
+            document.getElementById('action-btn').innerText = (currentIdx === quizData.length - 1) ? "查看結果" : "進入下一題";
+        } else {
+            currentIdx++;
+            if (currentIdx < quizData.length) render();
+            else finishQuiz();
+        }
+    }
+
+    function finishQuiz() {
+        document.getElementById('quiz-box').style.display = "none";
+        document.getElementById('finish-box').style.display = "block";
+        document.getElementById('final-score').innerText = `總分：${score} / 100`;
+        
+        // 關鍵：將所有暫存答案打包成一個長字串，並加上總分
+        const finalData = userAnswers.join(", ") + ` | 總分:${score}`;
+        sendToGoogle(finalData); // 只有這時候才會送出一筆資料到 Google
+    }
+
+    function resetQuiz() {
+        currentIdx = 0; score = 0; selectedIdx = null; isJudged = false;
+        userAnswers = []; // 清空暫存答案
+        document.getElementById('finish-box').style.display = "none";
+        document.getElementById('quiz-box').style.display = "block";
+        document.getElementById('score-text').innerText = `目前得分：0 / 100`;
+        render();
+    }
+
+    render();
+</script>
+</body>
+</html>

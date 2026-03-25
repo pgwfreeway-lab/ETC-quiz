@@ -3,12 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ETC 互動挑戰賽</title>
+    <title>ETC 互動挑戰賽</title> 
     <style>
-        :root { --primary: #0056b3; --success: #28a745; --bg: #f8f9fa; --selected-bg: #d4edda; --selected-border: #28a745; }
+        :root { --primary: #228b22; --success: #28a745; --bg: #f8f9fa; --selected-bg: #d4edda; --selected-border: #28a745; }
         body { font-family: "Microsoft JhengHei", sans-serif; background: var(--bg); margin: 0; display: flex; justify-content: center; align-items: center; min-height: 100vh; }
         .container { background: white; width: 95%; max-width: 500px; border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); position: relative; overflow: hidden; }
-        .restart-btn { position: absolute; top: 12px; right: 12px; background: rgba(255, 255, 255, 0.2); border: 1px solid rgba(255, 255, 255, 0.5); color: #ffffff; padding: 5px 12px; border-radius: 6px; cursor: pointer; font-size: 0.8rem; z-index: 105; font-weight: bold; }
+        .org-info {text-align: center;padding: 15px 10px;background: transparent;color: #333; font-size: 0.95rem;line-height: 1.4;border-bottom: none;} /* 加一條淡淡的分隔線 */
+        .restart-btn { position: absolute; top: 96px; right: 12px; background: rgba(255, 255, 255, 0.2); border: 1px solid rgba(255, 255, 255, 0.5); color: #ffffff; padding: 5px 12px; border-radius: 6px; cursor: pointer; font-size: 0.8rem; z-index: 105; font-weight: bold; }
         .header { background: var(--primary); color: white; padding: 40px 20px 25px 20px; text-align: center; }
         .score-box { margin-top: 10px; font-size: 1.1rem; font-weight: bold; background: rgba(0,0,0,0.2); display: inline-block; padding: 5px 18px; border-radius: 50px; }
         .content { padding: 25px; }
@@ -24,6 +25,10 @@
 <body>
 
 <div class="container">
+    <div class="org-info">
+        <div>交通部高速公路局南區養護工程分局</div>
+        <div style="font-weight: bold; font-size: 1.1rem; margin-top: 5px;">ETC電子收費宣導活動</div>
+    </div>
     <button class="restart-btn" onclick="resetQuiz()">🔄 重新作答</button>
     <div class="header">
         <h2 style="margin:0;">🚗 ETC 知識挑戰賽</h2>
@@ -80,16 +85,16 @@
     }
 
     const quizData = [
-        { q: "第一題：ETC通行費每日免費里程多少公里?(10分)", options: ["0公里", "10公里", "20公里", "30公里"], correct: 2, correctInfo: "正確！每日有20公里的免費里程喔!", wrongInfo: "答錯了！是20公里喔!" },
-        { q: "第二題：以下哪個「不是」正確的通行費繳費方式?(10分)", options: ["綁定銀行帳戶或信用卡自動儲值", "隨意點選不明繳費連結","至遠傳電信或遠通電收門市洽詢", "持單至超商或郵局繳費"], correct: 1, correctInfo: "答對!不明連結要當心!", wrongInfo: "答錯，不明連結很有可能是詐騙喔!" },
-        { q: "第三題：綁定自動儲值繳納通行費的好處有哪些?(10分)", options: ["省錢: 通行費享9折優惠", "省心: 無須擔心遲繳罰單", "省力: 不用一直持單繳費","以上皆是"], correct: 3, correctInfo: "答對!自動扣繳好處多多!", wrongInfo: "不對喔，綁定自動儲值的好處可多著呢!" },
-        { q: "第四題：通行費逾期未繳又置之不理會發生什麼事?(10分)", options: ["依道處條例第27條逐筆舉發300元罰單", "依規費法第20條加徵滯納金並移送強制執行", "名下所得、財產遭行政執行署扣押","以上皆是"], correct: 3, correctInfo: "答對!所以要準時繳納喔!", wrongInfo: "不對喔，逾期不繳會衍生很多問題!" },
-        { q: "第五題：收到催繳通知，想要確認詐騙可以怎麼做?(10分)", options: ["撥打遠通電收客服電話", "使用遠通電收官網/APP查詢","加入遠通電收LINE客服詢問","以上皆是"], correct: 3, correctInfo: "答對了！很聰明!", wrongInfo: "以上三個方式都可以喔!" },
-        { q: "加分題1: 填答者年齡?", options: ["18歲以下", "18-35歲", "36-50歲", "51-64歲", "65歲以上"], type: "survey" },
-        { q: "加分題2: 是否持有駕照?", options: ["汽機車皆有", "僅有汽車", "僅有機車","皆無"], type: "survey" },
-        { q: "加分題3: 居住縣市?", options: ["彰化以北","雲林縣","嘉義縣市","臺南市","高雄市","屏東縣","宜花東"], type: "survey" },
-        { q: "加分題4：家中車輛每周使用國道的次數?", options: ["幾乎每天","3-5天","1-2天","鮮少使用"], type: "survey" },
-        { q: "加分題5：家中車輛ETC通行費繳費方式?", options: ["申辦Etag-綁定自動儲值","申辦Etag-超商現金儲值","申辦Etag-但習慣持通知單繳費","未申辦Etag-通行費持通知單繳費"], type: "survey" }
+        { q: "ETC通行費每日免費里程多少公里?(10分)", options: ["0公里", "10公里", "20公里", "30公里"], correct: 2, correctInfo: "正確！每日有20公里的免費里程喔!", wrongInfo: "答錯了！是20公里喔!" },
+        { q: "以下哪個「不是」正確的通行費繳費方式?(10分)", options: ["綁定銀行帳戶或信用卡自動儲值", "隨意點選不明繳費連結","至遠傳電信或遠通電收門市洽詢", "持單至超商或郵局繳費"], correct: 1, correctInfo: "答對!不明連結要當心!", wrongInfo: "答錯，不明連結很有可能是詐騙喔!" },
+        { q: "綁定自動儲值繳納通行費的好處有哪些?(10分)", options: ["省錢: 通行費享9折優惠", "省心: 無須擔心遲繳罰單", "省力: 不用一直持單繳費","以上皆是"], correct: 3, correctInfo: "答對!自動扣繳好處多多!", wrongInfo: "不對喔，綁定自動儲值的好處可多著呢!" },
+        { q: "通行費逾期未繳又置之不理會發生什麼事?(10分)", options: ["依道處條例第27條逐筆舉發300元罰單", "依規費法第20條加徵滯納金並移送強制執行", "名下所得、財產遭行政執行署扣押","以上皆是"], correct: 3, correctInfo: "答對!所以要準時繳納喔!", wrongInfo: "不對喔，逾期不繳會衍生很多問題!" },
+        { q: "收到催繳通知，想要確認是不是詐騙可以怎麼做?(10分)", options: ["撥打遠通電收客服電話", "使用遠通電收官網/APP查詢","加入遠通電收LINE客服詢問","以上皆是"], correct: 3, correctInfo: "答對了！很聰明!", wrongInfo: "以上三個方式都可以喔!" },
+        { q: "加分題：填答者年齡?", options: ["18歲以下", "18-35歲", "36-50歲", "51-64歲", "65歲以上"], type: "survey" },
+        { q: "加分題：是否持有駕照?", options: ["汽機車皆有", "僅有汽車", "僅有機車","皆無"], type: "survey" },
+        { q: "加分題：居住縣市?", options: ["彰化以北","雲林縣","嘉義縣市","臺南市","高雄市","屏東縣","宜花東"], type: "survey" },
+        { q: "加分題：家中汽車行駛高速公路的頻率?", options: ["幾乎每天都會行駛","每周行駛3-5天","每周行駛1-2天","鮮少行駛高速公路","家中無汽車"], type: "survey" },
+        { q: "加分題：家中汽車ETC通行費繳費方式?", options: ["申辦Etag-綁定自動儲值","申辦Etag-超商現金儲值","申辦Etag-但習慣持通知單繳費","未申辦Etag-通行費持通知單繳費"], type: "survey" }
     ];
 
     let currentIdx = 0, score = 0, selectedIdx = null, isJudged = false;
